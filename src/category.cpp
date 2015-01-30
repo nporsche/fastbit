@@ -2783,9 +2783,13 @@ ibis::text::selectStrings(const ibis::bitvector& mask) const {
     }
 
     try {
-        const array_t<int64_t>
-            sp(fname.c_str(), static_cast<off_t>(0),
-               static_cast<off_t>((mask.size()+1)*sizeof(int64_t)));
+        int fsp = UnixOpen(fname.c_str(), OPEN_READONLY);
+        if (fsp < 0) {
+            LOGGER(ibis::gVerbose > 1)
+                << "Warning -- " << evt << " failed to open sp file "
+                << fname;
+            return 0;
+        }
         fname.erase(fname.size()-3); // remove .sp
         int fdata = UnixOpen(fname.c_str(), OPEN_READONLY);
         if (fdata < 0) {
@@ -2795,6 +2799,7 @@ ibis::text::selectStrings(const ibis::bitvector& mask) const {
             return 0;
         }
         IBIS_BLOCK_GUARD(UnixClose, fdata);
+        IBIS_BLOCK_GUARD(UnixClose, fsp);
 #if defined(_WIN32) && defined(_MSC_VER)
         (void)_setmode(fdata, _O_BINARY);
 #endif
@@ -2817,9 +2822,14 @@ ibis::text::selectStrings(const ibis::bitvector& mask) const {
             const ibis::bitvector::word_t *ixval = ix.indices();
             if (ix.isRange()) {
                 const ibis::bitvector::word_t top =
-                    (ixval[1] <= sp.size()-1 ? ixval[1] : sp.size()-1);
+                    (ixval[1] <= mask.size() ? ixval[1] : mask.size());
                 for (ibis::bitvector::word_t i = *ixval; i < top; ++ i) {
-                    ierr = readString(tmp, fdata, sp[i], sp[i+1],
+                    int64_t begin = 0;
+                    int64_t end = 0;
+                    UnixSeek(fsp, i*sizeof(int64_t), SEEK_SET);
+                    UnixRead(fsp, (char*)&begin, sizeof(int64_t));
+                    UnixRead(fsp, (char*)&end, sizeof(int64_t));
+                    ierr = readString(tmp, fdata, begin, end,
                                       buf, nbuf, inbuf, boffset);
                     if (ierr >= 0) {
                         res->push_back(tmp);
@@ -2828,7 +2838,7 @@ ibis::text::selectStrings(const ibis::bitvector& mask) const {
                         LOGGER(ibis::gVerbose >= 0)
                             << "Warning -- " << evt
                             << " failed to read from file \"" << fname
-                            << "\" (position " << sp[i] <<
+                            << "\" (position " << begin <<
                             "), readString returned ierr = " << ierr;
                         return 0;
                     }
@@ -2836,9 +2846,14 @@ ibis::text::selectStrings(const ibis::bitvector& mask) const {
             }
             else {
                 for (unsigned i = 0; i < ix.nIndices(); ++ i) {
-                    if (ixval[i] < sp.size()-1) {
-                        ierr = readString(tmp, fdata, sp[ixval[i]],
-                                          sp[ixval[i]+1],
+                    if (ixval[i] < mask.size()) {
+                        int64_t begin = 0;
+                        int64_t end = 0;
+                        UnixSeek(fsp, ixval[i]*sizeof(int64_t), SEEK_SET);
+                        UnixRead(fsp, (char*)&begin, sizeof(int64_t));
+                        UnixRead(fsp, (char*)&end, sizeof(int64_t));
+                        ierr = readString(tmp, fdata, begin,
+                                          end,
                                           buf, nbuf, inbuf, boffset);
                         if (ierr >= 0) {
                             res->push_back(tmp);
@@ -2847,7 +2862,7 @@ ibis::text::selectStrings(const ibis::bitvector& mask) const {
                             LOGGER(ibis::gVerbose >= 0)
                                 << (thePart != 0 ? thePart->name() : "")
                                 << " failed to read from file \"" << fname
-                                << "\" (position " << sp[ixval[i]]
+                                << "\" (position " << begin 
                                 << "), readString returned ierr = " << ierr;
                             return 0;
                         }
