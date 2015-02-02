@@ -1,6 +1,6 @@
 //File: $Id$
 // Author: John Wu <John.Wu at ACM.org>
-// Copyright 2000-2014 the Regents of the University of California
+// Copyright (c) 2000-2015 the Regents of the University of California
 #ifndef IBIS_CATEGORY_H
 #define IBIS_CATEGORY_H
 ///@file
@@ -100,7 +100,8 @@ protected:
     int  readString(uint32_t i, std::string &val) const;
     int  readString(std::string&, int, long, long, char*, uint32_t,
 		    uint32_t&, off_t&) const;
-    int  readStrings(const ibis::bitvector &, std::vector<std::string> &) const;
+    int  readStrings1(const ibis::bitvector&, std::vector<std::string>&) const;
+    int  readStrings2(const ibis::bitvector&, std::vector<std::string>&) const;
     int  writeStrings(const char *to, const char *from,
 		      const char *spto, const char *spfrom,
 		      ibis::bitvector &msk, const ibis::bitvector &sel,

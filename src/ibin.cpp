@@ -1,6 +1,6 @@
 // $Id$
 // Author: John Wu <John.Wu at ACM.org>
-// Copyright 2000-2014 the Regents of the University of California
+// Copyright (c) 2000-2015 the Regents of the University of California
 //
 // This file contains the implementation of the classes ibis::bin.  The
 // header for the class is in ibin.h.
@@ -2905,7 +2905,7 @@ void ibis::bin::construct(const char* df) {
     if (ibis::gVerbose > 4) {
 	ibis::util::logger lg;
 	lg() << "bin[" << col->fullname() << "]::construct(" << (df ? df : "")
-             << ") -- finished constructing a simple equality index with "
+             << ") -- finished constructing a binned equality index with "
 	     << nobs << " bin" << (nobs>1?"s":"");
 	if (ibis::gVerbose > 8) {
 	    lg() << "\n";
@@ -2960,7 +2960,7 @@ void ibis::bin::construct(const array_t<E>& varr) {
 	ibis::util::logger lg;
 	lg() << "bin[" << (col ? col->fullname() : "?.?")
 	     << "]::construct<" << typeid(E).name() << '[' << varr.size()
-	     << "]> -- finished constructing a simple equality index with "
+	     << "]> -- finished constructing a binned equality index with "
 	     << nobs << " bin" << (nobs>1?"s":"");
 	if (ibis::gVerbose > 8) {
 	    lg() << "\n";

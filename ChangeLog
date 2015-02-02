@@ -1,3 +1,70 @@
+2014-01-31 John Wu <John dot Wu at ACM dot org>
+	* src/category.cpp: Chen's change is equivalent to
+	text::readStrings, rename the original selectStrings to
+	text::readStrings2 and the original text::readStrings to
+	text::readStrings1, add new implementation of selectStrings in
+	terms of readStrings1 and readStrings2
+
+2014-01-30 Chen HANG <hangchen at diditaxi dot com dot cn>
+	* src/category.cpp: change text::selectStrings to read values from
+	.sp file instead of using a file map.  This improves performance
+	when one or two entries are read from a text file
+
+2014-01-28 John Wu <John dot Wu at ACM dot org>
+	* src/table.h, src/mensa.cpp: add functions
+	ibis::table::isValidName and ibis::table::consecrateName
+
+2014-01-26 John Wu <John dot Wu at ACM dot org>
+	* src/part.cpp: check for the integers read back from metadata
+	file in function readMedaData
+
+2014-01-25 John Wu <John dot Wu at ACM dot org>
+	* src/iapi.cpp: correct the misuses of the declarations of
+	mutexLock
+
+2014-01-23 John Wu <John dot Wu at ACM dot org>
+	* src/column.h, src/iapi.h: add notes about the names of the
+	columns
+
+2014-01-04 John Wu <John dot Wu at ACM dot org>
+	* java/Makefile.am: change include_HEADERS to pkginclude_HEADERS to
+	allow installing in standard system directory
+	* tests/scripts/fastbit-config.in: add notes about including
+	FastBit header files as <fastbit/ibis.h> instead of <ibis.h>
+
+2014-01-04 Martin Hauke <mardnh at gmx.de>
+	* src/Makefile.am: change include_HEADERS to pkginclude_HEADERS to
+	allow installing in standard system directory
+
+2014-12-28 John Wu <John dot Wu at ACM dot org>
+	* tests/acmpub.v.a, tests/acmpub.v.b: modify the test dictionary
+	to exercise the new feature in dictionary class
+	* src/bord.cpp: update the use of dictionaries to allow 0 as a
+	regular code word
+
+2014-12-27 John Wu <John dot Wu at ACM dot org>
+	* src/ikeywords.cpp: update functions to reflect the change in
+	dictionary
+
+2014-12-26 John Wu <John dot Wu at ACM dot org>
+	* src/dictionary.h, src/dictionary.cpp: modify the dictionary code
+	to allow users to pass in an arbitrary combination of integers and
+	strings, chnage the integer code for null values from 0 to -1
+	(0xFFFFFFFFU in 32-bit unsigned integer format)
+
+2014-12-16 John Wu <John dot Wu at ACM dot org>
+	* src/bitvector.cpp: change do_cnt() to use local variable to
+	count the number of set bits so as to avoid the thread-safety
+	issue, define FASTBIT_LAZY_INIT to be 1 (i.e., go back to lazy
+	initialization in bitvectors, reversing the change makde on
+	2014/08/06)
+
+2014-12-15 John Wu <John dot Wu at ACM dot org>
+	* src/bitvector.cpp: in do_cnt() add code blocks to reduce the
+	future cost of counting a bitvector of all 0s
+	* src/query.cpp: in doEvaluate remove the test on ht.cnt() to
+	avoid a problem reported by Steven Enns
+
 2014-12-14 John Wu <John dot Wu at ACM dot org>
 	* configure.ac: add test for presence of strptime
 	* src/whereParser.yy: add conditional macro HAVE_STRPTIME to check

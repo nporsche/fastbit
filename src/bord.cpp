@@ -1,6 +1,6 @@
 // File: $id$
 // Author: John Wu <John.Wu at ACM.org> Lawrence Berkeley National Laboratory
-// Copyright 2007-2014 the Regents of the University of California
+// Copyright (c) 2007-2015 the Regents of the University of California
 //
 #if defined(_WIN32) && defined(_MSC_VER)
 #pragma warning(disable:4786)	// some identifier longer than 256 characters
@@ -2451,10 +2451,10 @@ int ibis::bord::column::dump(std::ostream& out, uint32_t i) const {
             else if (dic == 0) {
 		out << (*vals)[i];
 	    }
-	    else if ((*vals)[i] > dic->size()) {
+	    else if ((*vals)[i] >= dic->size()) {
 		out << (*vals)[i];
 	    }
-	    else if ((*vals)[i] > 0) {
+	    else {
 		out << '"' << (*dic)[(*vals)[i]] << '"';
 	    }
 	    ierr = 0;
@@ -4695,6 +4695,13 @@ int ibis::bord::append(const ibis::selectClause& sc, const ibis::part& prt,
     std::string mesg    = "bord[";
     mesg += m_name;
     mesg += "]::append";
+    if ((uint64_t)nh + (uint64_t)nqq > 0x7FFFFFFFUL) {
+        LOGGER(ibis::gVerbose > 0)
+            << "Warning -- " << mesg << " can not proceed because the "
+            "resulting data partition would be too large (" << nh << " + "
+            << nqq << " = " << nh+nqq << " rows)";
+        return -18;
+    }
     if (ibis::gVerbose > 4) {
 	ibis::util::logger lg;
 	lg() << mesg << " -- to process " << nqq << " row" << (nqq>1?"s":"")
@@ -4842,6 +4849,13 @@ int ibis::bord::append(const ibis::selectClause &sc, const ibis::part& prt,
     }
     if (ierr == 0)
 	return ierr;
+    if ((uint64_t)nEvents+(uint64_t)ierr > 0x7FFFFFFFUL) {
+        LOGGER(ibis::gVerbose > 0)
+            << "Warning -- " << mesg << " can not proceed because the "
+            "resulting data partition is too large (" << nEvents << " + "
+            << ierr << " = " << nEvents + ierr << " rows)";
+        return -18;
+    }
 
     btmp.nEvents = ierr;
     const uint32_t nh = nEvents;
@@ -5162,36 +5176,113 @@ ibis::bord::column::column(const ibis::bord *tbl, ibis::TYPE_T t,
 	switch (m_type) {
 	case ibis::BYTE: {
 	    nr = static_cast<array_t<signed char>*>(st)->size();
+            if (nr != static_cast<array_t<signed char>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<signed char>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::UBYTE: {
 	    nr = static_cast<array_t<unsigned char>*>(st)->size();
+            if (nr != static_cast<array_t<unsigned char>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<unsigned char>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::SHORT: {
 	    nr = static_cast<array_t<int16_t>*>(st)->size();
+            if (nr != static_cast<array_t<int16_t>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<int16_t>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::USHORT: {
 	    nr = static_cast<array_t<uint16_t>*>(st)->size();
+            if (nr != static_cast<array_t<uint16_t>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<uint16_t>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::INT: {
 	    nr = static_cast<array_t<int32_t>*>(st)->size();
+            if (nr != static_cast<array_t<int32_t>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<int32_t>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::UINT: {
 	    nr = static_cast<array_t<uint32_t>*>(st)->size();
+            if (nr != static_cast<array_t<uint32_t>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<uint32_t>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::LONG: {
 	    nr = static_cast<array_t<int64_t>*>(st)->size();
+            if (nr != static_cast<array_t<int64_t>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<int64_t>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::ULONG: {
 	    nr = static_cast<array_t<uint64_t>*>(st)->size();
+            if (nr != static_cast<array_t<uint64_t>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<uint64_t>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::FLOAT: {
 	    nr = static_cast<array_t<float>*>(st)->size();
+            if (nr != static_cast<array_t<float>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<float>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::DOUBLE: {
 	    nr = static_cast<array_t<double>*>(st)->size();
+            if (nr != static_cast<array_t<double>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<double>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::TEXT: {
 	    nr = static_cast<std::vector<std::string>*>(st)->size();
+            if (nr != static_cast<std::vector<std::string>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<std::vector<std::string>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::CATEGORY: {
 	    nr = static_cast<std::vector<std::string>*>(st)->size();
@@ -5213,12 +5304,33 @@ ibis::bord::column::column(const ibis::bord *tbl, ibis::TYPE_T t,
 	    // 	(*tmp)[i] = dic->insert(((*stv)[i]).c_str());
 	    // buffer = tmp;
 	    // delete stv;
+            if (nr != static_cast<std::vector<std::string>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<std::vector<std::string>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::OID: {
 	    nr = static_cast<array_t<rid_t>*>(st)->size();
+            if (nr != static_cast<array_t<rid_t>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<rid_t>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	case ibis::BLOB: {
 	    nr = static_cast<std::vector<opaque>*>(st)->size();
+            if (nr != static_cast<array_t<opaque>*>(st)->size()) {
+                LOGGER(ibis::gVerbose > 0)
+                    << "Warning -- too many values for bord::column ("
+                    << static_cast<array_t<opaque>*>(st)->size()
+                    << "), it is wrap to " << nr;
+                throw "too many values for bord::column";
+            }
 	    break;}
 	default: {
 	    LOGGER(ibis::gVerbose >= 0)
@@ -10447,8 +10559,9 @@ int ibis::bord::column::getString(uint32_t i, std::string &val) const {
 	    val = str_column->at(i);
     }
     else if (dic != 0) {
-	if (i > 0 && i <= (*dic).size())
-	    val = (*dic)[i];
+        const char *tmp  = (*dic)[i];
+	if (tmp != 0)
+	    val = tmp;
     }
     return 0;
 } // ibis::bord::column::getString
@@ -10546,7 +10659,7 @@ ibis::bord::column::selectOpaques(const bitvector& mask) const {
 			if (dic == 0) {
 			    (*array)[i].copy(&(prop[j]), sizeof(uint32_t));
 			}
-			else if (prop[j] <= dic->size()) {
+			else if (prop[j] < dic->size()) {
 			    const char* str =(*dic)[prop[j]]; 
 			    (*array)[i].copy(str, std::strlen(str));
 			}
@@ -10560,7 +10673,7 @@ ibis::bord::column::selectOpaques(const bitvector& mask) const {
 			if (dic == 0) {
 			    (*array)[i].copy(&(prop[idx0[j]]), sizeof(uint32_t));
 			}
-			else if (prop[idx0[j]] <= dic->size()) {
+			else if (prop[idx0[j]] < dic->size()) {
 			    const char* str =(*dic)[prop[idx0[j]]]; 
 			    (*array)[i].copy(str, std::strlen(str));
 			}
@@ -10583,7 +10696,7 @@ ibis::bord::column::selectOpaques(const bitvector& mask) const {
 			if (dic == 0) {
 			    (*array)[i].copy(&(prop[j]), sizeof(uint32_t));
 			}
-			else if (prop[j] <= dic->size()) {
+			else if (prop[j] < dic->size()) {
 			    const char* str =(*dic)[prop[j]]; 
 			    (*array)[i].copy(str, std::strlen(str));
 			}
@@ -10599,7 +10712,7 @@ ibis::bord::column::selectOpaques(const bitvector& mask) const {
 				(*array)[i].copy(&(prop[idx0[j]]),
 						 sizeof(uint32_t));
 			    }
-			    else if (prop[idx0[j]] <= dic->size()) {
+			    else if (prop[idx0[j]] < dic->size()) {
 				const char* str =(*dic)[prop[idx0[j]]]; 
 				(*array)[i].copy(str, std::strlen(str));
 			    }

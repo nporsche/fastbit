@@ -1,7 +1,7 @@
 /* File: $Id$
    Author: John Wu <John.Wu at acm.org>
       Lawrence Berkeley National Laboratory
-   Copyright 20014-2014 the Regents of the University of California
+   Copyright (c) 2001-20154-2014 the Regents of the University of California
 */
 #ifndef IBIS_IAPI_H
 #define IBIS_IAPI_H
@@ -125,13 +125,11 @@ extern "C" {
     /** Register a n-dimensional array under the specified name. */
     int fastbit_iapi_register_array_nd
     (const char*, FastBitDataType, void*, uint64_t*, uint64_t);
-    /** Register an external array under the specified name.  The content
-        of the array is available through FastBitReadExtArray. */
+    /** Register an external array under the specified name. */
     int fastbit_iapi_register_array_ext
     (const char*, FastBitDataType, uint64_t*, uint64_t, void*,
      FastBitReadExtArray);
-    /** Register an array under the specified name.  Only the index for the
-        array is actually available. */
+    /** Register an array under the specified name. */
     int fastbit_iapi_register_array_index_only
     (const char*, FastBitDataType, uint64_t*, uint64_t,
      double*, uint64_t, int64_t*, uint64_t, void*, FastBitReadBitmaps);

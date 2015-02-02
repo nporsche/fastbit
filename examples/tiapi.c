@@ -2,7 +2,7 @@
  File: $Id$
  Author: John Wu <John.Wu at acm.org>
       Lawrence Berkeley National Laboratory
- Copyright 20014-2014 the Regents of the University of California
+ Copyright (c) 2001-20154-2014 the Regents of the University of California
 */
 /**
    @file tiapi.c
@@ -565,7 +565,6 @@ static void queryarray2(size_t n, int16_t *a1, int32_t *a2, double *a3) {
         fflush(0);
     }
     else {
-        long int n1 = ierr;
         long int expected = (n / 2);
         if (ierr != expected) {
             printf("Warning -- fastbit_selection_evaluate(...) expected %ld, "

@@ -1,6 +1,6 @@
 //File: $Id$
 // Author: John Wu <John.Wu at ACM.org> Lawrence Berkeley National Laboratory
-// Copyright 2000-2014 the Regents of the University of California
+// Copyright (c) 2000-2015 the Regents of the University of California
 //
 // Implement the ibis::part functions that modify a partition.
 ////////////////////////////////////////////////////////////////////////
@@ -1166,6 +1166,14 @@ long ibis::part::appendToBackup(const char* dir) {
 		       "directory (%s), maybe missing table.tdc",
 		       dir);
 	return ierr;
+    }
+    if ((uint64_t)nEvents + (uint64_t)napp > 0x7FFFFFFFUL) {
+        LOGGER(ibis::gVerbose > 0)
+            << "Warning -- part::appendToBackup can not proceed because the "
+            "resulting partition will have " << nEvents << " + " << napp
+            << " = " << nEvents + napp
+            << " rows, which is more than this software could handle";
+        return -18;
     }
 
     if (ibis::gVerbose > 1)

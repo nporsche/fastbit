@@ -1,7 +1,7 @@
 // File $Id$
 // Author: John Wu <John.Wu at ACM.org>
 //         Lawrence Berkeley National Laboratory
-// Copyright 2000-2014 the Regents of the University of California
+// Copyright (c) 2000-2015 the Regents of the University of California
 //
 //  The implementation of class query.  It performs most of the query
 //  processing functions, calls the data partition object for the actual
@@ -3914,7 +3914,7 @@ int ibis::query::doEvaluate(const ibis::qExpr* term,
     }
     case ibis::qExpr::LOGICAL_OR: {
 	ierr = doEvaluate(term->getLeft(), ht);
-	if (ierr >= 0 && ht.cnt() < ht.size()) {
+	if (ierr >= 0) { //  && ht.cnt() < ht.size()
 	    ibis::bitvector b1;
 	    ierr = doEvaluate(term->getRight(), b1);
 	    if (ierr > 0)
@@ -4169,7 +4169,7 @@ int ibis::query::doEvaluate(const ibis::qExpr* term,
     }
     case ibis::qExpr::LOGICAL_OR: {
 	ierr = doEvaluate(term->getLeft(), mask, ht);
-	if (ierr >= 0 && ht.cnt() < mask.cnt()) {
+	if (ierr >= 0) {// && ht.cnt() < mask.cnt()
 	    ibis::bitvector b1;
 	    ierr = doEvaluate(term->getRight(), mask, b1);
 	    if (ierr > 0)
